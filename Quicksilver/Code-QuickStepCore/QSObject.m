@@ -154,6 +154,24 @@ NSSize QSMaxIconSize;
     //		NSLog(@"setobj:%@", [objectDictionary objectForKey:anIdentifier]);
 }
 
++ (void)unregisterObjectWithIdentifier:(NSString *)anIdentifier {
+    if (anIdentifier) {
+        @synchronized(objectDictionary) {
+            [objectDictionary removeObjectForKey:anIdentifier];
+        }
+    }
+}
+
++ (void)unregisterObject:(QSBasicObject *)object withIdentifier:(NSString *)anIdentifier {
+    if (object && anIdentifier) {
+        @synchronized(objectDictionary) {
+            if ([objectDictionary objectForKey:anIdentifier] == object) {
+                [objectDictionary removeObjectForKey:anIdentifier];
+            }
+        }
+    }
+}
+
 - (id)init {
 	if (self = [super init]) {
 
@@ -294,6 +312,7 @@ NSSize QSMaxIconSize;
 	//NSLog(@"dealloc %x %@", self, [self name]);
 	[self unloadIcon];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [QSObject unregisterObjectWithIdentifier:[self identifier]];
 	[self unloadChildren];
 	 data = nil;
 	 meta = nil;
